@@ -57,13 +57,55 @@ body:has(.welcome-dialog[open]){overflow:hidden}
 .explain-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:16px}
 .explain-heading span{flex:none;background:var(--ink);color:var(--paper);padding:4px 8px;font-size:12px;font-weight:900;letter-spacing:.1em}
 .explain-heading h2{margin:0;font-size:clamp(23px,2.8vw,34px);line-height:1.25;font-weight:900}
-.explain-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.explain-grid article{min-width:0;padding:17px 18px;background:var(--card);border:3px solid var(--ink)}
-.explain-grid h3{margin:0 0 8px;font-size:19px;font-weight:900}
-.explain-grid p{margin:0;font-size:14px;line-height:1.65;font-weight:600}
+.explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.qa-item{min-width:0;align-self:start;background:var(--card);border:3px solid var(--ink)}
+.qa-item summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:66px;padding:14px 17px;list-style:none;cursor:pointer;font-size:19px;font-weight:900}
+.qa-item summary::-webkit-details-marker{display:none}
+.qa-item summary::after{content:'+';display:grid;place-items:center;flex:none;width:32px;height:32px;border:2px solid var(--ink);background:var(--gold);font-size:25px;line-height:1}
+.qa-item[open] summary{background:var(--gold)}
+.qa-item[open] summary::after{content:'−';background:var(--red)}
+.qa-item .qa-answer{padding:16px 18px 18px;border-top:3px solid var(--ink)}
+.qa-item p{margin:0;font-size:14px;line-height:1.65;font-weight:600}
 .reference-links{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:16px;padding:14px 17px;background:var(--gold);border:3px solid var(--ink)}
 .reference-links span{margin-right:auto;font-size:14px;font-weight:900}
 .reference-links a{display:inline-flex;align-items:center;min-height:38px;padding:6px 10px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);font-size:13px;font-weight:900;text-decoration-thickness:2px;text-underline-offset:3px}
 .reference-links a:hover{background:var(--red)}
 @media(max-width:760px){.explain-heading{display:block}.explain-heading h2{margin-top:10px}.explain-grid{grid-template-columns:1fr}}
 @media(max-width:460px){.reference-links{align-items:stretch;flex-direction:column}.reference-links span{margin:0 0 3px}.reference-links a{width:100%}}
+
+/* Seed comparison and field-level feedback */
+.jump-error{grid-column:2;margin:-15px 0 0!important;padding:7px 10px;background:var(--card);border:2px solid var(--ink)}
+.jump-form input[aria-invalid="true"]{border-color:#ad002f;box-shadow:inset 0 0 0 1px #ad002f}
+.compare-section{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:24px;margin-top:25px;padding:22px 28px;background:var(--card);border:3px solid var(--ink);box-shadow:7px 7px 0 var(--ink)}
+.compare-kicker{display:inline-block;padding:4px 8px;background:var(--blue);color:white;font-size:12px;font-weight:900;letter-spacing:.1em}
+.compare-heading h2{margin:10px 0 4px;font-size:clamp(28px,3vw,39px);line-height:1.1;font-weight:900}
+.compare-heading p{margin:0;font-size:14px;line-height:1.5;font-weight:700}
+.compare-controls{display:flex;align-items:flex-end;flex-wrap:wrap;gap:12px;margin:0}
+.compare-picker{display:flex;flex-direction:column;gap:7px}
+.compare-picker>span{font-size:14px;font-weight:900}
+.compare-choice{display:flex;align-items:center;gap:7px;min-width:0}
+.compare-choice label{position:relative;display:block;cursor:pointer}
+.compare-choice input{position:absolute;width:1px;height:1px;margin:0;padding:0;opacity:0}
+.compare-choice label span{display:grid;place-items:center;min-width:70px;min-height:52px;padding:8px 12px;border:3px solid var(--ink);background:white;font-size:16px;font-weight:900;white-space:nowrap}
+.compare-choice input:checked+span{background:var(--blue);color:white;box-shadow:3px 3px 0 var(--ink)}
+.compare-choice input:focus-visible+span{outline:3px solid var(--red);outline-offset:3px}
+.compare-choice label:hover span{background:var(--red);color:var(--ink)}
+.compare-choice input:checked+span:hover{background:var(--blue);color:white}
+.compare-choice input:disabled+span{opacity:.5;cursor:wait}
+.compare-controls button{height:52px;padding:8px 20px;border:3px solid var(--ink);background:var(--gold);color:var(--ink);font-size:16px;font-weight:900;white-space:nowrap}
+.compare-controls button:hover{background:var(--red)}
+.compare-controls #compare-cancel{background:white}
+.compare-status{grid-column:1/-1;margin:14px 0;font-size:15px;font-weight:900}
+.compare-results{grid-column:1/-1;display:grid;gap:8px}
+.compare-row{display:grid;grid-template-columns:minmax(145px,1.6fr) minmax(110px,1fr) minmax(110px,1fr) minmax(100px,.8fr);align-items:center;gap:10px;padding:12px 14px;border:2px solid var(--ink);background:white;font-variant-numeric:tabular-nums;font-weight:800}
+.compare-seed{min-width:0;overflow-wrap:anywhere;font-family:'Barlow Condensed',sans-serif;font-size:20px}
+.compare-count{font-size:19px;font-weight:900}
+.compare-cost{font-size:17px}
+.compare-state{justify-self:end;padding:4px 8px;background:var(--paper);font-size:13px;white-space:nowrap}
+.compare-row[data-state="hit"]{background:var(--gold)}
+.compare-row[data-state="hit"] .compare-state{background:var(--blue);color:white}
+.compare-row[data-state="miss"] .compare-state{background:var(--red)}
+.compare-note{grid-column:1/-1;margin:14px 0 0;font-size:12px;line-height:1.55;font-weight:700}
+@media(max-width:900px){.compare-section{display:block}.compare-controls{margin-top:18px}}
+@media(max-width:760px){.jump-error{grid-column:1;margin:-12px 0 0!important}.compare-row{grid-template-columns:1fr 1fr}.compare-seed{grid-column:1/-1}.compare-state{justify-self:start}.compare-section{padding:22px}}
+@media(max-width:460px){.compare-section{padding:18px;box-shadow:5px 5px 0 var(--ink)}.compare-controls{align-items:stretch;flex-direction:column}.compare-picker,.compare-choice{width:100%}.compare-choice label{flex:1}.compare-choice label span{min-width:0}.compare-controls button{width:100%}.compare-row{gap:7px;padding:10px}.compare-count{font-size:16px}.compare-cost{font-size:14px}.qa-item summary{min-height:58px;font-size:17px}}

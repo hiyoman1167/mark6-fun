@@ -1,4 +1,4 @@
-import { firstMatchInRange } from './simulation.js';
+import { firstMatchInRange } from './simulation.js?v=3';
 
 self.onmessage = ({ data }) => {
   const { jobId, chunkId, start, end, targetRank, words } = data;

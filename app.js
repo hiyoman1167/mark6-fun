@@ -1,4 +1,4 @@
-import { combinationRank, drawAt, MAX_UNIQUE_DRAWS, parseNumbers, seedWords, UNIT_COST } from './simulation.js';
+import { combinationRank, drawAt, parseNumbers, seedWords, UNIT_COST } from './simulation.js?v=3';
 
 const $ = (selector) => document.querySelector(selector);
 const format = (value) => new Intl.NumberFormat('zh-HK').format(value);
@@ -6,6 +6,7 @@ const currency = (value) => `HK$${format(value)}`;
 const CHUNK_SIZE = 250_000;
 const WELCOME_STORAGE_KEY = 'mark6-welcome-ack-v1';
 let activeSearch = null;
+let activeCompare = null;
 let nextJobId = 0;
 
 const sharedParams = new URLSearchParams(location.search);
@@ -46,9 +47,14 @@ function error(message = '') {
   $('#error').hidden = !message;
 }
 
+function fieldError(selector, message = '') {
+  $(selector).textContent = message;
+  $(selector).hidden = !message;
+}
+
 function integer(value) {
-  const number = Number(value);
-  return Number.isSafeInteger(number) && number >= 1 && number <= MAX_UNIQUE_DRAWS ? number : null;
+  const text = String(value).trim();
+  return /^\d+$/.test(text) && BigInt(text) > 0n ? BigInt(text) : null;
 }
 
 function seed() {
@@ -91,10 +97,13 @@ function clearResults() {
 }
 
 function setBusy(busy) {
+  busy = Boolean(activeSearch || activeCompare);
   $('#search').disabled = busy;
   $('#jump').disabled = busy;
-  $('#cancel').hidden = !busy;
-  for (const selector of ['#numbers', '#seed', '#jump-count', '#new-seed']) {
+  $('#compare-start').disabled = busy;
+  $('#cancel').hidden = !activeSearch;
+  $('#compare-cancel').hidden = !activeCompare;
+  for (const selector of ['#numbers', '#seed', '#jump-count', '#new-seed', 'input[name="compare-count"]']) {
     document.querySelectorAll(selector).forEach((control) => { control.disabled = busy; });
   }
 }
@@ -106,8 +115,79 @@ function stopSearch() {
   setBusy(false);
 }
 
+function stopCompare() {
+  if (!activeCompare) return;
+  for (const worker of activeCompare.workers) worker.terminate();
+  activeCompare = null;
+  setBusy(false);
+}
+
+function freshSeed() {
+  return `seed-${Array.from(crypto.getRandomValues(new Uint32Array(2)), (value) => value.toString(36)).join('-')}`;
+}
+
+function renderCompareRow(job) {
+  const row = document.createElement('div');
+  row.className = 'compare-row';
+  row.innerHTML = '<div class="compare-seed"></div><div class="compare-count"></div><div class="compare-cost"></div><div class="compare-state"></div>';
+  row.querySelector('.compare-seed').textContent = job.seed;
+  job.row = row;
+  $('#compare-results').append(row);
+  updateCompareRow(job);
+}
+
+function updateCompareRow(job) {
+  job.row.querySelector('.compare-count').textContent = job.found === null ? `${format(job.checked)} 次` : `${format(job.found)} 次`;
+  job.row.querySelector('.compare-cost').textContent = currency((job.found ?? job.checked) * UNIT_COST);
+  job.row.querySelector('.compare-state').textContent = job.done ? '首次命中' : job.started ? '搜尋中…' : '等候中';
+  job.row.dataset.state = job.done ? 'hit' : job.started ? 'running' : 'waiting';
+}
+
+function compareAssign(state, worker, job) {
+  if (activeCompare !== state) return;
+  if (!job) {
+    job = state.jobs[state.nextJob++];
+    if (!job) return;
+  }
+  job.started = true;
+  worker.compareJob = job;
+  updateCompareRow(job);
+  const start = job.checked + 1;
+  worker.postMessage({
+    jobId: state.jobId,
+    chunkId: job.id,
+    start,
+    end: start + CHUNK_SIZE - 1,
+    targetRank: state.targetRank,
+    words: job.words,
+  });
+}
+
+function compareChunk(state, worker, data) {
+  if (activeCompare !== state || data.jobId !== state.jobId) return;
+  const job = worker.compareJob;
+  if (!job || job.id !== data.chunkId) return;
+  job.checked = data.foundIndex ?? job.checked + CHUNK_SIZE;
+  job.found = data.foundIndex;
+  job.done = data.foundIndex !== null;
+  updateCompareRow(job);
+  if (job.done) {
+    state.finished++;
+    $('#compare-status').textContent = `${state.finished} / ${state.jobs.length} 個 Seed 已完成`;
+    if (state.finished === state.jobs.length) {
+      const fastest = [...state.jobs].sort((a, b) => a.found - b.found)[0];
+      $('#compare-status').textContent = `全部完成。最快係 ${fastest.seed}：第 ${format(fastest.found)} 次命中。`;
+      stopCompare();
+      return;
+    }
+    compareAssign(state, worker);
+  } else {
+    compareAssign(state, worker, job);
+  }
+}
+
 function updateProgress(state) {
-  const count = Math.min(state.prefixChunk * CHUNK_SIZE, MAX_UNIQUE_DRAWS);
+  const count = state.prefixChunk * CHUNK_SIZE;
   $('#draw-count').textContent = format(count);
   $('#cost').textContent = currency(count * UNIT_COST);
   $('#elapsed').textContent = `${((performance.now() - state.startedAt) / 1000).toFixed(1)} 秒`;
@@ -116,24 +196,21 @@ function updateProgress(state) {
 function finishSearch(state, foundIndex) {
   const elapsed = (performance.now() - state.startedAt) / 1000;
   stopSearch();
-  const count = foundIndex ?? MAX_UNIQUE_DRAWS;
-  $('#status').textContent = foundIndex === null ? '呢個 seed 嘅完整序列都未出現目標' : '搵到！首次命中目標號碼';
-  $('#live-result').dataset.state = foundIndex === null ? 'miss' : 'hit';
-  $('#count-label').textContent = foundIndex === null ? '已模擬' : '首次命中於第';
+  const count = foundIndex;
+  $('#status').textContent = '搵到！首次命中目標號碼';
+  $('#live-result').dataset.state = 'hit';
+  $('#count-label').textContent = '首次命中於第';
   $('#draw-count').textContent = format(count);
   $('#cost').textContent = currency(count * UNIT_COST);
   $('#elapsed').textContent = `${elapsed.toFixed(1)} 秒`;
   $('.progress-track').classList.remove('is-searching');
   $('#progress-fill').style.width = '100%';
   $('#progress-fill').style.transform = 'none';
-  if (foundIndex !== null) {
-    balls($('#next-balls'), drawAt(state.seed, foundIndex + 1));
-    $('#next-wrap').hidden = false;
-  }
+  balls($('#next-balls'), drawAt(state.seed, foundIndex + 1));
+  $('#next-wrap').hidden = false;
 }
 
 function assignChunk(state, worker) {
-  if (state.nextChunk >= state.totalChunks) return;
   const chunkId = state.nextChunk++;
   const start = chunkId * CHUNK_SIZE + 1;
   if (state.bestIndex !== null && start >= state.bestIndex) return;
@@ -141,7 +218,7 @@ function assignChunk(state, worker) {
     jobId: state.jobId,
     chunkId,
     start,
-    end: Math.min(start + CHUNK_SIZE - 1, MAX_UNIQUE_DRAWS),
+    end: start + CHUNK_SIZE - 1,
     targetRank: state.targetRank,
     words: state.words,
   });
@@ -161,10 +238,6 @@ function handleChunk(state, worker, data) {
     finishSearch(state, state.bestIndex);
     return;
   }
-  if (state.prefixChunk === state.totalChunks) {
-    finishSearch(state, null);
-    return;
-  }
   updateProgress(state);
   assignChunk(state, worker);
 }
@@ -174,6 +247,10 @@ $('#numbers').addEventListener('input', () => {
   clearResults();
   closeSharePanel();
   error();
+  $('#compare-results').replaceChildren();
+  $('#compare-status').textContent = '';
+  $('#compare-status').hidden = true;
+  fieldError('#compare-error');
 });
 $('#seed').addEventListener('input', () => {
   resetCopyStatus();
@@ -192,7 +269,7 @@ $('#copy-seed').addEventListener('click', async () => {
   }
 });
 $('#new-seed').addEventListener('click', () => {
-  $('#seed').value = `seed-${Array.from(crypto.getRandomValues(new Uint32Array(2)), (value) => value.toString(36)).join('-')}`;
+  $('#seed').value = freshSeed();
   resetCopyStatus();
   clearResults();
   closeSharePanel();
@@ -258,7 +335,6 @@ $('#search').addEventListener('click', () => {
       words: seedWords(chosenSeed),
       targetRank: combinationRank(target),
       startedAt: performance.now(),
-      totalChunks: Math.ceil(MAX_UNIQUE_DRAWS / CHUNK_SIZE),
       nextChunk: 0,
       prefixChunk: 0,
       completed: new Set(),
@@ -267,9 +343,9 @@ $('#search').addEventListener('click', () => {
     };
     activeSearch = state;
     setBusy(true);
-    const workerCount = Math.min(4, navigator.hardwareConcurrency || 2, state.totalChunks);
+    const workerCount = Math.min(4, navigator.hardwareConcurrency || 2);
     for (let i = 0; i < workerCount; i++) {
-      const worker = new Worker('./simulation-worker.js', { type: 'module' });
+      const worker = new Worker('./simulation-worker.js?v=3', { type: 'module' });
       worker.onmessage = ({ data }) => handleChunk(state, worker, data);
       worker.onerror = () => {
         if (activeSearch !== state) return;
@@ -285,13 +361,64 @@ $('#search').addEventListener('click', () => {
 $('#jump').addEventListener('click', () => {
   try {
     const index = integer($('#jump-count').value);
-    if (!index) throw new Error('指定次數請輸入 1 至 4,294,967,296 之間嘅整數。');
+    if (!index) throw new Error('指定次數請輸入大過 0 嘅整數。');
     const numbers = drawAt(seed(), index);
-    error();
+    fieldError('#jump-error');
+    $('#jump-count').removeAttribute('aria-invalid');
     $('#jump-result').hidden = false;
     $('#jump-label').textContent = `第 ${format(index)} 次產生嘅號碼`;
     balls($('#jump-balls'), numbers);
-  } catch (cause) { error(cause.message); }
+  } catch (cause) {
+    fieldError('#jump-error', cause.message);
+    $('#jump-count').setAttribute('aria-invalid', 'true');
+  }
+});
+
+$('#jump-count').addEventListener('input', () => {
+  fieldError('#jump-error');
+  $('#jump-count').removeAttribute('aria-invalid');
+});
+
+$('#compare-start').addEventListener('click', () => {
+  const target = parseNumbers($('#numbers').value);
+  if (!target) {
+    fieldError('#compare-error', '請先喺上面輸入 6 個 1–49 之間、唔重複嘅目標號碼。');
+    return;
+  }
+  fieldError('#compare-error');
+  $('#compare-results').replaceChildren();
+  const count = Number(document.querySelector('input[name="compare-count"]:checked').value);
+  const seen = new Set();
+  const jobs = Array.from({ length: count }, (_, id) => {
+    let generated;
+    do { generated = freshSeed(); } while (seen.has(generated));
+    seen.add(generated);
+    return { id, seed: generated, words: seedWords(generated), checked: 0, found: null, started: false, done: false };
+  });
+  jobs.forEach(renderCompareRow);
+  const state = { jobId: ++nextJobId, targetRank: combinationRank(target), jobs, nextJob: 0, finished: 0, workers: [] };
+  activeCompare = state;
+  setBusy(true);
+  const workerCount = Math.min(4, Math.max(1, (navigator.hardwareConcurrency || 2) - 1), count);
+  $('#compare-status').hidden = false;
+  $('#compare-status').textContent = `0 / ${count} 個 Seed 已完成；同時使用 ${workerCount} 條工作線。`;
+  for (let i = 0; i < workerCount; i++) {
+    const worker = new Worker('./simulation-worker.js?v=3', { type: 'module' });
+    worker.onmessage = ({ data }) => compareChunk(state, worker, data);
+    worker.onerror = () => {
+      if (activeCompare !== state) return;
+      stopCompare();
+      fieldError('#compare-error', '比較過程出錯，請再試一次。');
+      $('#compare-status').textContent = '比較已停止';
+    };
+    state.workers.push(worker);
+    compareAssign(state, worker);
+  }
+});
+
+$('#compare-cancel').addEventListener('click', () => {
+  stopCompare();
+  $('#compare-status').textContent = '比較已停止；上面保留已完成嘅結果。';
 });
 
 $('#cancel').addEventListener('click', () => {

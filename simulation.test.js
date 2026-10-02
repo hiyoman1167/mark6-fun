@@ -29,7 +29,13 @@ test('a seed and draw index reproduce the same six numbers directly', () => {
     assert.equal(combinationRank(balls), rankAt(words, index));
     assert.deepEqual(drawAt('research-seed', index), balls);
   }
-  assert.equal(rankAt(words, 1), rankAt(words, MAX_UNIQUE_DRAWS + 1));
+  assert.equal(rankAt(words, MAX_UNIQUE_DRAWS), rankAt(words, BigInt(MAX_UNIQUE_DRAWS)));
+  assert.notEqual(rankAt(words, 1), rankAt(words, MAX_UNIQUE_DRAWS + 1));
+  assert.equal(rankAt(words, MAX_UNIQUE_DRAWS + 1), rankAt(words, BigInt(MAX_UNIQUE_DRAWS) + 1n));
+  const hugeIndex = 10n ** 35n + 12345n;
+  assert.deepEqual(drawAt('research-seed', hugeIndex), drawAt('research-seed', hugeIndex));
+  assert.equal(combinationRank(drawAt('research-seed', hugeIndex)), rankAt(words, hugeIndex));
+  assert.throws(() => drawAt('research-seed', 0n), RangeError);
 });
 
 test('separate ranges find the same earliest result as one serial search', () => {

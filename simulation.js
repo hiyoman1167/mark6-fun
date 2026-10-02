@@ -1,10 +1,11 @@
 export const COMBINATIONS = 13_983_816;
 export const UNIT_COST = 10;
-// rankAt repeats after this many indices because its counter is 32-bit.
+// The original generator uses this many draws before its 32-bit counter wraps.
+// Indices beyond it mix the upper counter words into the seed to avoid repeats.
 export const MAX_UNIQUE_DRAWS = 0x1_0000_0000;
 
 // Counter-based draws allow workers to calculate any index independently.
-export const GENERATOR_VERSION = 2;
+export const GENERATOR_VERSION = 3;
 
 export function seedWords(seed) {
   let h = 1779033703 ^ seed.length;
@@ -28,8 +29,40 @@ function mix32(value) {
 
 // 53 pseudo-random bits select one of C(49, 6) combinations.
 export function rankAt(words, drawIndex) {
-  const high = mix32(drawIndex ^ words[0]) & 0x1fffff;
-  const low = mix32(Math.imul(drawIndex, 0x9e3779b1) ^ words[1]);
+  let counter;
+  let upper;
+  if (typeof drawIndex === 'bigint') {
+    if (drawIndex < 1n) throw new RangeError('Invalid draw index');
+    counter = Number(drawIndex & 0xffff_ffffn);
+    upper = drawIndex >> 32n;
+  } else {
+    if (!Number.isSafeInteger(drawIndex) || drawIndex < 1) throw new RangeError('Invalid draw index');
+    counter = drawIndex >>> 0;
+    upper = Math.floor(drawIndex / MAX_UNIQUE_DRAWS);
+  }
+  let word0 = words[0];
+  let word1 = words[1];
+  // Keep all existing results through draw 2^32 unchanged. Later draws
+  // include every higher 32-bit counter word in a separate domain.
+  if (typeof upper === 'bigint') {
+    if (drawIndex === 0x1_0000_0000n) upper = 0n;
+    while (upper > 0n) {
+      const part = Number(upper & 0xffff_ffffn);
+      word0 = mix32(word0 ^ part ^ 0x9e3779b9);
+      word1 = mix32(word1 ^ Math.imul(part, 0x85ebca6b));
+      upper >>= 32n;
+    }
+  } else {
+    if (drawIndex === MAX_UNIQUE_DRAWS) upper = 0;
+    while (upper > 0) {
+      const part = upper >>> 0;
+      word0 = mix32(word0 ^ part ^ 0x9e3779b9);
+      word1 = mix32(word1 ^ Math.imul(part, 0x85ebca6b));
+      upper = Math.floor(upper / MAX_UNIQUE_DRAWS);
+    }
+  }
+  const high = mix32(counter ^ word0) & 0x1fffff;
+  const low = mix32(Math.imul(counter, 0x9e3779b1) ^ word1);
   return Math.min(COMBINATIONS - 1, Math.floor((high * 0x1_0000_0000 + low) / 0x20_0000_0000_0000 * COMBINATIONS));
 }
 
@@ -73,7 +106,6 @@ export function numbersAtRank(rank) {
 }
 
 export function drawAt(seed, drawIndex) {
-  if (!Number.isSafeInteger(drawIndex) || drawIndex < 1) throw new RangeError('Invalid draw index');
   return numbersAtRank(rankAt(seedWords(seed), drawIndex));
 }
 
