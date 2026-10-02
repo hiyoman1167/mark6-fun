@@ -51,3 +51,14 @@ body:has(.welcome-dialog[open]){overflow:hidden}
 .share-actions #native-share[hidden]{display:none}
 .share-actions #native-share svg{width:23px;height:23px}
 .share-status{min-height:17px;margin:8px 0 0;color:#075b24;font-size:12px;font-weight:800}
+
+/* Indexable field notes with plain-language context for the simulation. */
+.explain-section{margin-top:34px;padding-top:18px;border-top:3px solid var(--ink)}
+.explain-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:16px}
+.explain-heading span{flex:none;background:var(--ink);color:var(--paper);padding:4px 8px;font-size:12px;font-weight:900;letter-spacing:.1em}
+.explain-heading h2{margin:0;font-size:clamp(23px,2.8vw,34px);line-height:1.25;font-weight:900}
+.explain-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.explain-grid article{min-width:0;padding:17px 18px;background:var(--card);border:3px solid var(--ink)}
+.explain-grid h3{margin:0 0 8px;font-size:19px;font-weight:900}
+.explain-grid p{margin:0;font-size:14px;line-height:1.65;font-weight:600}
+@media(max-width:760px){.explain-heading{display:block}.explain-heading h2{margin-top:10px}.explain-grid{grid-template-columns:1fr}}

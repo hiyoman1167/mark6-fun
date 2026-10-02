@@ -4,8 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffe54f">
-  <meta name="description" content="輸入六個號碼，用同一個 seed 模擬六合彩組合首次出現嘅次數。">
-  <title>六合彩 Seed Lab — 六個號碼，幾時會遇見？</title>
+  <meta name="description" content="免費六合彩 Seed 模擬器：輸入 6 個號碼同隨機種子，尋找組合首次出現嘅模擬次數、估算投注支出，並分享可重現嘅連結。非官方研究工具，不能預測真實攪珠。">
+  <link rel="canonical" href="https://hiyoman1167.github.io/mark6-fun/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_HK">
+  <meta property="og:site_name" content="六合彩 Seed Lab">
+  <meta property="og:title" content="六合彩 Seed 模擬器｜6 個號碼幾多次先出現？">
+  <meta property="og:description" content="輸入 6 個號碼同 Seed，模擬首次出現次數，分享同一組實驗。非官方研究工具。">
+  <meta property="og:url" content="https://hiyoman1167.github.io/mark6-fun/">
+  <meta name="twitter:card" content="summary">
+  <title>六合彩 Seed 模擬器｜6 個號碼幾多次先出現？</title>
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./style-max.css">
 </head>
@@ -81,6 +89,15 @@
       <div class="jump-title"><span class="jump-mark" aria-hidden="true">↳</span><div><h2 id="jump-title">直接跳到指定次數</h2><p>想睇第 100,000 次？輸入次數，即刻拎到同一 seed 嗰次產生嘅號碼。</p></div></div>
       <div class="jump-form"><label class="sr-only" for="jump-count">指定次數</label><input id="jump-count" type="number" min="1" max="4294967296" step="1" value="100000" inputmode="numeric"><button id="jump" type="button">產生該次號碼 <span aria-hidden="true">→</span></button></div>
       <div id="jump-result" class="jump-result" hidden><span id="jump-label"></span><div id="jump-balls" class="ball-row"></div></div>
+    </section>
+
+    <section class="explain-section" aria-labelledby="explain-title">
+      <div class="explain-heading"><span>03 / FIELD NOTES</span><h2 id="explain-title">呢個六合彩 Seed 模擬，點運作？</h2></div>
+      <div class="explain-grid">
+        <article><h3>Seed 係乜？</h3><p>Seed 係呢個電腦模擬序列嘅起點。同一個 Seed 同抽取次數，會重現同一組號碼；佢唔係真實攪珠嘅種子。</p></article>
+        <article><h3>點樣搵首次出現？</h3><p>程式逐次產生六個不重複號碼，再搵出目標組合最早出現嘅次數。即使用多條工作線搜尋，亦會核對較早嘅範圍。</p></article>
+        <article><h3>金額代表乜？</h3><p>模擬支出以每注 HK$10 乘抽取次數計算，只係假設每次都買一注；唔包括獎金，亦唔係投注建議。</p></article>
+      </div>
     </section>
 
     <footer class="facts"><div class="fact"><strong>1 / 13,983,816</strong><span>指定 6 號碼組合，單次理論機率</span></div><div class="fact"><strong>13,983,816 <small>次</small></strong><span>獨立隨機抽取嘅理論平均等待次數</span></div><p class="disclaimer">呢個工具只模擬電腦隨機序列；seed 唔係真實六合彩嘅「世界種子」，亦唔能夠預測攪珠。金額假設每次買一注，只計投注支出，唔包括獎金。</p><p class="age-notice">18+ <span>購買六合彩只限年滿 18 歲人士。</span></p></footer>

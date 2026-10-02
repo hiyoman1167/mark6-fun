@@ -83,6 +83,8 @@ The website is published from the repository's `main` branch using **GitHub Page
 
 To deploy your own fork: go to **Settings → Pages → Deploy from a branch**, then select **main** and **/(root)**.
 
+For Google Search, add your public site as a URL-prefix property in Search Console and submit `https://hiyoman1167.github.io/mark6-fun/sitemap.xml`. The site also declares a canonical URL so seeded share links point search engines back to the main page. Indexing and ranking are decided by Google.
+
 ## License
 
 Released under the [MIT License](./LICENSE). Built for curiosity, not betting advice.
