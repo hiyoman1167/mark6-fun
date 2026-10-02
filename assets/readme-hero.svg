@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" role="img" aria-labelledby="title description">
+  <title id="title">Mark Six Seed Lab</title>
+  <desc id="description">A yellow, pink and blue poster with six numbered balls.</desc>
+  <defs>
+    <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="2" fill="#151515" opacity=".14"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="340" fill="#FFE54F"/>
+  <rect x="3" y="3" width="1194" height="334" fill="none" stroke="#151515" stroke-width="6"/>
+  <path d="M590 3h607v334H590z" fill="#1539CF"/>
+  <path d="M645 3h32v334h-32z" fill="#151515"/>
+  <path d="M3 245h644v92H3z" fill="#FF4D95"/>
+  <rect x="515" y="5" width="135" height="240" fill="url(#dots)"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="900">
+    <rect x="34" y="30" width="287" height="31" fill="#151515"/>
+    <text x="47" y="51" fill="#FFE54F" font-size="17" letter-spacing="2">HONG KONG / NO. 06</text>
+    <text x="32" y="140" fill="#151515" font-size="80" letter-spacing="-4">MARK SIX</text>
+    <text x="32" y="223" fill="#151515" font-size="104" letter-spacing="-5">SEED LAB</text>
+    <text x="34" y="297" fill="#151515" font-size="24" letter-spacing="1">6 NUMBERS. 1 SEED. HOW MANY DRAWS?</text>
+  </g>
+  <g stroke="#151515" stroke-width="4">
+    <circle cx="738" cy="110" r="42" fill="#FF4D95"/>
+    <circle cx="842" cy="110" r="42" fill="#DFFF5E"/>
+    <circle cx="946" cy="110" r="42" fill="#FFE54F"/>
+    <circle cx="738" cy="217" r="42" fill="#FFE54F"/>
+    <circle cx="842" cy="217" r="42" fill="#FF4D95"/>
+    <circle cx="946" cy="217" r="42" fill="#DFFF5E"/>
+  </g>
+  <g fill="#151515" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="900" text-anchor="middle">
+    <text x="738" y="122">04</text><text x="842" y="122">28</text><text x="946" y="122">31</text>
+    <text x="738" y="229">44</text><text x="842" y="229">47</text><text x="946" y="229">48</text>
+  </g>
+  <g transform="rotate(12 1090 173)">
+    <circle cx="1090" cy="173" r="72" fill="#FF4D95" stroke="#151515" stroke-width="5"/>
+    <text x="1090" y="190" fill="#151515" font-family="Arial, Helvetica, sans-serif" font-size="49" font-weight="900" text-anchor="middle">6/49</text>
+  </g>
+  <text x="691" y="316" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="800" letter-spacing="2">RANDOMNESS, REPRODUCED.</text>
+</svg>

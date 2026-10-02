@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffe54f">
+  <meta name="description" content="輸入六個號碼，用同一個 seed 模擬六合彩組合首次出現嘅次數。">
+  <title>六合彩 Seed Lab — 六個號碼，幾時會遇見？</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./style-max.css">
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳到模擬工具</a>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand" aria-label="六合彩 Seed Lab"><span class="brand-mark" aria-hidden="true">6</span><span class="brand-type"><strong>六合彩</strong><small>SEED LAB</small></span></div>
+      <span class="top-note"><span class="top-note-dot" aria-hidden="true"></span>非官方隨機序列研究工具</span>
+    </header>
+
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <span class="eyebrow">HONG KONG / NUMBER EXPERIMENT NO. 06</span>
+        <h1 id="page-title">六個號碼，<br><em>幾時會遇見？</em></h1>
+        <p>畀我一組號碼同一個 seed。模擬會一直尋找，直到搵到佢首次出現嘅次數。</p>
+      </div>
+      <div class="hero-figure" aria-hidden="true">
+        <span class="figure-index">THE DRAW / 001</span>
+        <div class="figure-balls"><i>4</i><i>28</i><i>31</i><i>44</i><i>47</i><i>48</i></div>
+        <span class="figure-caption">6 NUMBERS · 1–49 · ONE SEED</span>
+      </div>
+      <div class="hero-sticker" aria-hidden="true"><span>一齊<br>試吓！</span></div>
+    </section>
+
+    <div class="marquee" aria-hidden="true"><span>LUCK IS RANDOM ✳ COUNT EVERY DRAW ✳ SAME SEED SAME SEQUENCE ✳ LUCK IS RANDOM ✳ COUNT EVERY DRAW ✳</span></div>
+
+    <div id="workspace" class="workspace">
+      <section class="panel controls" aria-labelledby="setup-title">
+        <div class="panel-heading"><h2 id="setup-title">設定你嘅組合</h2><span>01 / INPUT</span></div>
+        <div class="field-group">
+          <label for="numbers">目標號碼 <small>6 個不同號碼，1–49</small></label>
+          <input id="numbers" class="number-input" value="4, 28, 31, 44, 47, 48" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="numbers-help">
+          <p id="numbers-help" class="field-help">用空格、逗號或「+」分開。預設係你提供嘅例子；特別號碼 19 不計。</p>
+          <div class="ball-strip"><span class="strip-label">你的六個號碼</span><div id="target-balls" class="ball-row" aria-label="目標號碼"></div></div>
+        </div>
+
+        <div class="ticket-divider" aria-hidden="true"></div>
+
+        <div class="field-group seed-group">
+          <label for="seed">隨機種子 <small>同一 seed，重現同一序列</small></label>
+          <div class="seed-row"><input id="seed" value="mark6-2026-09-26" autocomplete="off" spellcheck="false"><button id="copy-seed" class="copy-button" type="button">複製 Seed</button><button id="new-seed" class="icon-button" type="button" title="產生新 seed" aria-label="產生新 seed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.5 6.2"/><path d="M20 4v7h-7"/></svg></button></div>
+          <p id="copy-status" class="copy-status" role="status"></p>
+          <button id="share-toggle" class="share-toggle" type="button" aria-expanded="false" aria-controls="share-panel">分享號碼、Seed 同連結 <span aria-hidden="true">↗</span></button>
+          <div id="share-panel" class="share-panel" hidden>
+            <label for="share-message">分享訊息 <small>可自行修改，再複製去 Threads 或其他地方</small></label>
+            <textarea id="share-message" rows="6" spellcheck="false"></textarea>
+            <p id="share-local-warning" class="share-local-warning" hidden>目前係本機網址，其他人打唔開。網站公開上線後，分享連結會自動變成公開網址。</p>
+            <div class="share-actions"><button id="copy-share" type="button">複製整段訊息</button><button id="native-share" type="button" aria-label="系統分享" title="系統分享" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></div>
+            <p id="share-status" class="share-status" role="status"></p>
+          </div>
+        </div>
+
+        <div class="action-row"><button id="search" class="primary-button" type="button">尋找首次出現 <span aria-hidden="true">↗</span></button><button id="cancel" class="secondary-button" type="button" hidden>停止模擬</button></div>
+        <p id="error" class="error" role="alert" hidden></p>
+      </section>
+
+      <section class="panel results" aria-labelledby="result-title">
+        <div class="panel-heading"><h2 id="result-title">模擬結果</h2><span>02 / OUTPUT</span></div>
+        <div id="empty-result" class="empty-result"><div class="orbit" aria-hidden="true"><span>?</span><i></i><i></i><i></i></div><h3>等緊你開波</h3><p>輸入目標號碼，再撳「尋找首次出現」。你會見到實際模擬次數同下一組號碼。</p></div>
+        <div id="live-result" hidden>
+          <p id="status" class="status" role="status">模擬進行中</p>
+          <div class="main-stat"><span id="count-label">已模擬</span><div class="stat-value"><strong id="draw-count">0</strong><span>次</span></div></div>
+          <div class="progress-track" aria-hidden="true"><div id="progress-fill"></div></div>
+          <div class="result-grid"><div><span>每注 HK$10 · 模擬支出</span><strong id="cost">HK$0</strong></div><div><span>搜尋用時</span><strong id="elapsed">—</strong></div></div>
+          <div id="next-wrap" class="next-wrap" hidden><div class="next-heading"><h3>同一 seed 嘅下一組</h3><span>首次命中後再抽一次</span></div><div id="next-balls" class="ball-row"></div></div>
+        </div>
+        <span class="result-watermark" aria-hidden="true">6/49</span>
+      </section>
+    </div>
+
+    <section class="jump-section" aria-labelledby="jump-title">
+      <div class="jump-title"><span class="jump-mark" aria-hidden="true">↳</span><div><h2 id="jump-title">直接跳到指定次數</h2><p>想睇第 100,000 次？輸入次數，即刻拎到同一 seed 嗰次產生嘅號碼。</p></div></div>
+      <div class="jump-form"><label class="sr-only" for="jump-count">指定次數</label><input id="jump-count" type="number" min="1" max="4294967296" step="1" value="100000" inputmode="numeric"><button id="jump" type="button">產生該次號碼 <span aria-hidden="true">→</span></button></div>
+      <div id="jump-result" class="jump-result" hidden><span id="jump-label"></span><div id="jump-balls" class="ball-row"></div></div>
+    </section>
+
+    <footer class="facts"><div class="fact"><strong>1 / 13,983,816</strong><span>指定 6 號碼組合，單次理論機率</span></div><div class="fact"><strong>13,983,816 <small>次</small></strong><span>獨立隨機抽取嘅理論平均等待次數</span></div><p class="disclaimer">呢個工具只模擬電腦隨機序列；seed 唔係真實六合彩嘅「世界種子」，亦唔能夠預測攪珠。金額假設每次買一注，只計投注支出，唔包括獎金。</p><p class="age-notice">18+ <span>購買六合彩只限年滿 18 歲人士。</span></p></footer>
+  </main>
+  <dialog id="welcome-dialog" class="welcome-dialog" aria-labelledby="welcome-title" aria-describedby="welcome-description">
+    <div class="welcome-topline"><span>SEED LAB / FIRST VISIT</span><span aria-hidden="true">✳</span></div>
+    <strong class="welcome-age" aria-hidden="true">18+</strong>
+    <h2 id="welcome-title">入嚟之前，<br>睇清楚先。</h2>
+    <div id="welcome-description" class="welcome-description">
+      <p><strong>購買六合彩只限年滿 18 歲人士。</strong></p>
+      <p><strong>非官方隨機序列研究工具。</strong>本網站只作模擬，唔提供投注，亦唔能夠預測真實攪珠結果。</p>
+    </div>
+    <button id="welcome-continue" class="welcome-continue" type="button">我已年滿 18 歲，明白並繼續 <span aria-hidden="true">↗</span></button>
+    <p class="welcome-footnote">未滿 18 歲請關閉此頁。確認只會儲存喺你目前使用嘅瀏覽器。</p>
+  </dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
