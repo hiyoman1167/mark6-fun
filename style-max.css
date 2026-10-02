@@ -61,4 +61,9 @@ body:has(.welcome-dialog[open]){overflow:hidden}
 .explain-grid article{min-width:0;padding:17px 18px;background:var(--card);border:3px solid var(--ink)}
 .explain-grid h3{margin:0 0 8px;font-size:19px;font-weight:900}
 .explain-grid p{margin:0;font-size:14px;line-height:1.65;font-weight:600}
+.reference-links{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:16px;padding:14px 17px;background:var(--gold);border:3px solid var(--ink)}
+.reference-links span{margin-right:auto;font-size:14px;font-weight:900}
+.reference-links a{display:inline-flex;align-items:center;min-height:38px;padding:6px 10px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);font-size:13px;font-weight:900;text-decoration-thickness:2px;text-underline-offset:3px}
+.reference-links a:hover{background:var(--red)}
 @media(max-width:760px){.explain-heading{display:block}.explain-heading h2{margin-top:10px}.explain-grid{grid-template-columns:1fr}}
+@media(max-width:460px){.reference-links{align-items:stretch;flex-direction:column}.reference-links span{margin:0 0 3px}.reference-links a{width:100%}}

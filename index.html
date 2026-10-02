@@ -91,13 +91,21 @@
       <div id="jump-result" class="jump-result" hidden><span id="jump-label"></span><div id="jump-balls" class="ball-row"></div></div>
     </section>
 
-    <section class="explain-section" aria-labelledby="explain-title">
-      <div class="explain-heading"><span>03 / FIELD NOTES</span><h2 id="explain-title">呢個六合彩 Seed 模擬，點運作？</h2></div>
+    <section id="research-guide" class="explain-section" aria-labelledby="explain-title">
+      <div class="explain-heading"><span>03 / RESEARCH GUIDE</span><h2 id="explain-title">六合彩 Seed 模擬研究指南</h2></div>
       <div class="explain-grid">
-        <article><h3>Seed 係乜？</h3><p>Seed 係呢個電腦模擬序列嘅起點。同一個 Seed 同抽取次數，會重現同一組號碼；佢唔係真實攪珠嘅種子。</p></article>
-        <article><h3>點樣搵首次出現？</h3><p>程式逐次產生六個不重複號碼，再搵出目標組合最早出現嘅次數。即使用多條工作線搜尋，亦會核對較早嘅範圍。</p></article>
-        <article><h3>金額代表乜？</h3><p>模擬支出以每注 HK$10 乘抽取次數計算，只係假設每次都買一注；唔包括獎金，亦唔係投注建議。</p></article>
+        <article><h3>Seed 係乜？</h3><p>Seed 係程式產生可重現序列嘅文字起點。同一個 Seed 配合同一次數，會得到同一組號碼，方便朋友用分享連結重做同一個實驗。呢個 Seed 只控制本網站嘅電腦模擬，唔係真實攪珠機或六合彩嘅隱藏種子。</p></article>
+        <article><h3>點樣搵首次出現？</h3><p>程式逐次計算一組由 1 至 49 揀出嘅六個不重複號碼，再同你輸入嘅目標比較。搜尋會由較早次數開始；即使用多條工作線並行，亦會等較早範圍完成，先確認最早命中位置。</p></article>
+        <article><h3>金額代表乜？</h3><p>結果以每次 HK$10 作示範，將模擬次數乘以每注金額，顯示假設投注支出。計算唔會扣除任何假設獎金，亦唔代表實際投注記錄、預期回報或投注建議。</p></article>
+        <article><h3>點解有 13,983,816 種組合？</h3><p>六合彩單式係從 49 個號碼中揀 6 個，次序唔同但號碼相同仍然係同一組。組合數用「49 揀 6」計算，即 49 × 48 × 47 × 46 × 45 × 44 再除以 6 × 5 × 4 × 3 × 2 × 1，結果係 13,983,816。</p></article>
+        <article><h3>「平均」唔係保證</h3><p>喺每次抽取互相獨立、每組一樣可能嘅理論模型下，指定組合單次機率係 1／13,983,816；平均等待次數亦係 13,983,816。等到平均次數時，累積命中機率約 63.2%，唔係必定命中；單一 Seed 可以早好多，亦可以遲好多。</p></article>
+        <article><h3>模擬同真實攪珠有咩分別？</h3><p>本工具用固定演算法產生偽隨機序列，唔會連接賽馬會系統、讀取歷史開獎數據，亦唔會預測未來結果。模擬只比較六個主號碼，唔計特別號碼；現實六合彩開獎程序同監察安排請以賽馬會公布為準。</p></article>
       </div>
+      <nav class="reference-links" aria-label="六合彩官方資料">
+        <span>查閱官方玩法與規則</span>
+        <a href="https://special.hkjc.com/e-win/en-US/betting-info/marksix/types-of-entry/" target="_blank" rel="noopener noreferrer">賽馬會：六合彩投注方式 ↗</a>
+        <a href="https://www.hkjc.com/english/betting/betting_rule.aspx" target="_blank" rel="noopener noreferrer">賽馬會：博彩規則 ↗</a>
+      </nav>
     </section>
 
     <footer class="facts"><div class="fact"><strong>1 / 13,983,816</strong><span>指定 6 號碼組合，單次理論機率</span></div><div class="fact"><strong>13,983,816 <small>次</small></strong><span>獨立隨機抽取嘅理論平均等待次數</span></div><p class="disclaimer">呢個工具只模擬電腦隨機序列；seed 唔係真實六合彩嘅「世界種子」，亦唔能夠預測攪珠。金額假設每次買一注，只計投注支出，唔包括獎金。</p><p class="age-notice">18+ <span>購買六合彩只限年滿 18 歲人士。</span></p></footer>
