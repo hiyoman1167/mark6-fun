@@ -105,6 +105,14 @@ export function numbersAtRank(rank) {
   return numbers;
 }
 
+export function randomCombination(randomUint32 = () => crypto.getRandomValues(new Uint32Array(1))[0]) {
+  const range = 0x1_0000_0000;
+  const limit = Math.floor(range / COMBINATIONS) * COMBINATIONS;
+  let value;
+  do { value = randomUint32(); } while (value >= limit);
+  return numbersAtRank(value % COMBINATIONS);
+}
+
 export function drawAt(seed, drawIndex) {
   return numbersAtRank(rankAt(seedWords(seed), drawIndex));
 }

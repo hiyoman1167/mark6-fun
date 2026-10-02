@@ -15,7 +15,7 @@
   <meta name="twitter:card" content="summary">
   <title>六合彩 Seed 模擬器｜6 個號碼幾多次先出現？</title>
   <link rel="stylesheet" href="./style.css">
-  <link rel="stylesheet" href="./style-max.css?v=6">
+  <link rel="stylesheet" href="./style-max.css?v=8">
 </head>
 <body>
   <a class="skip-link" href="#workspace">跳到模擬工具</a>
@@ -46,8 +46,9 @@
         <div class="panel-heading"><h2 id="setup-title">設定你嘅組合</h2><span>01 / INPUT</span></div>
         <div class="field-group">
           <label for="numbers">目標號碼 <small>6 個不同號碼，1–49</small></label>
-          <input id="numbers" class="number-input" value="4, 28, 31, 44, 47, 48" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="numbers-help">
-          <p id="numbers-help" class="field-help">用空格、逗號或「+」分開。預設係你提供嘅例子；特別號碼 19 不計。</p>
+          <div class="number-entry"><input id="numbers" class="number-input" value="4, 28, 31, 44, 47, 48" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="numbers-help"><button id="random-numbers" class="random-numbers-button" type="button" aria-label="隨機揀 6 個目標號碼"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3h4v4M3 17l6-6m3-3 9-5M17 21h4v-4M3 7l6 6m3 3 9 5"/></svg><span>隨機揀 6 個</span></button></div>
+          <p id="numbers-help" class="field-help">可自己輸入，或者按「隨機揀 6 個」。特別號碼唔計。</p>
+          <p id="number-pick-status" class="sr-only" role="status"></p>
           <div class="ball-strip"><span class="strip-label">你的六個號碼</span><div id="target-balls" class="ball-row" aria-label="目標號碼"></div></div>
         </div>
 
@@ -80,6 +81,17 @@
           <div class="progress-track" aria-hidden="true"><div id="progress-fill"></div></div>
           <div class="result-grid"><div><span>每注 HK$10 · 模擬支出</span><strong id="cost">HK$0</strong></div><div><span>搜尋用時</span><strong id="elapsed">—</strong></div></div>
           <div id="next-wrap" class="next-wrap" hidden><div class="next-heading"><h3>同一 seed 嘅下一組</h3><span>首次命中後再抽一次</span></div><div id="next-balls" class="ball-row"></div></div>
+          <div id="relay-wrap" class="relay-wrap" hidden>
+            <div class="relay-heading"><span>SEED RELAY / 新玩法</span><h3>用命中次數接力</h3><p id="relay-prompt"></p></div>
+            <button id="relay-generate" class="relay-generate" type="button"><span id="relay-generate-label">換個 Seed 睇新號碼</span><span aria-hidden="true">↗</span></button>
+            <div id="relay-preview" class="relay-preview" hidden>
+              <p id="relay-description" role="status"></p>
+              <code id="relay-seed"></code>
+              <div id="relay-balls" class="ball-row" aria-label="接力產生嘅號碼"></div>
+              <button id="relay-use" class="relay-use" type="button">用呢組做新目標 <span aria-hidden="true">→</span></button>
+            </div>
+            <p class="relay-note">原本 Seed 會保留；呢個玩法唔會提高真實中獎機率。</p>
+          </div>
         </div>
         <span class="result-watermark" aria-hidden="true">6/49</span>
       </section>
@@ -130,6 +142,6 @@
     <button id="welcome-continue" class="welcome-continue" type="button">我已年滿 18 歲，明白並繼續 <span aria-hidden="true">↗</span></button>
     <p class="welcome-footnote">未滿 18 歲請關閉此頁。確認只會儲存喺你目前使用嘅瀏覽器。</p>
   </dialog>
-  <script type="module" src="./app.js?v=5"></script>
+  <script type="module" src="./app.js?v=7"></script>
 </body>
 </html>

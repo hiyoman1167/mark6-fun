@@ -1,4 +1,4 @@
-import { combinationRank, drawAt, parseNumbers, seedWords, UNIT_COST } from './simulation.js?v=3';
+import { combinationRank, drawAt, parseNumbers, randomCombination, seedWords, UNIT_COST } from './simulation.js?v=4';
 
 const $ = (selector) => document.querySelector(selector);
 const format = (value) => new Intl.NumberFormat('zh-HK').format(value);
@@ -7,6 +7,8 @@ const CHUNK_SIZE = 250_000;
 const WELCOME_STORAGE_KEY = 'mark6-welcome-ack-v1';
 let activeSearch = null;
 let activeCompare = null;
+let relaySource = null;
+let relayPick = null;
 let nextJobId = 0;
 
 const sharedParams = new URLSearchParams(location.search);
@@ -94,6 +96,15 @@ function clearResults() {
   delete $('#live-result').dataset.state;
   $('#empty-result').hidden = false;
   $('#jump-result').hidden = true;
+  clearRelay();
+}
+
+function clearRelay() {
+  relaySource = null;
+  relayPick = null;
+  $('#relay-wrap').hidden = true;
+  $('#relay-preview').hidden = true;
+  $('#relay-generate-label').textContent = '換個 Seed 睇新號碼';
 }
 
 function setBusy(busy) {
@@ -101,9 +112,11 @@ function setBusy(busy) {
   $('#search').disabled = busy;
   $('#jump').disabled = busy;
   $('#compare-start').disabled = busy;
+  $('#relay-generate').disabled = busy;
+  $('#relay-use').disabled = busy;
   $('#cancel').hidden = !activeSearch;
   $('#compare-cancel').hidden = !activeCompare;
-  for (const selector of ['#numbers', '#seed', '#jump-count', '#new-seed', 'input[name="compare-count"]']) {
+  for (const selector of ['#numbers', '#random-numbers', '#seed', '#jump-count', '#new-seed', 'input[name="compare-count"]']) {
     document.querySelectorAll(selector).forEach((control) => { control.disabled = busy; });
   }
 }
@@ -208,6 +221,11 @@ function finishSearch(state, foundIndex) {
   $('#progress-fill').style.transform = 'none';
   balls($('#next-balls'), drawAt(state.seed, foundIndex + 1));
   $('#next-wrap').hidden = false;
+  relaySource = { index: foundIndex, seed: state.seed, targetRank: state.targetRank };
+  relayPick = null;
+  $('#relay-prompt').textContent = `沿用第 ${format(foundIndex)} 次，睇另一個 Seed 同一次會抽到乜。`;
+  $('#relay-preview').hidden = true;
+  $('#relay-wrap').hidden = false;
 }
 
 function assignChunk(state, worker) {
@@ -243,6 +261,7 @@ function handleChunk(state, worker, data) {
 }
 
 $('#numbers').addEventListener('input', () => {
+  $('#number-pick-status').textContent = '';
   balls($('#target-balls'), parseNumbers($('#numbers').value) ?? []);
   clearResults();
   closeSharePanel();
@@ -251,6 +270,14 @@ $('#numbers').addEventListener('input', () => {
   $('#compare-status').textContent = '';
   $('#compare-status').hidden = true;
   fieldError('#compare-error');
+});
+$('#random-numbers').addEventListener('click', () => {
+  const chosen = randomCombination();
+  $('#numbers').value = chosen.join(', ');
+  $('#numbers').dispatchEvent(new Event('input', { bubbles: true }));
+  $('#random-numbers span').textContent = '再抽一組';
+  $('#random-numbers').setAttribute('aria-label', '再隨機揀 6 個目標號碼');
+  $('#number-pick-status').textContent = `隨機揀咗 ${chosen.join('、')}。`;
 });
 $('#seed').addEventListener('input', () => {
   resetCopyStatus();
@@ -273,6 +300,31 @@ $('#new-seed').addEventListener('click', () => {
   resetCopyStatus();
   clearResults();
   closeSharePanel();
+});
+
+$('#relay-generate').addEventListener('click', () => {
+  if (!relaySource) return;
+  let chosenSeed;
+  let chosenNumbers;
+  do {
+    chosenSeed = freshSeed();
+    chosenNumbers = drawAt(chosenSeed, relaySource.index);
+  } while (chosenSeed === relaySource.seed || combinationRank(chosenNumbers) === relaySource.targetRank);
+  relayPick = { seed: chosenSeed, numbers: chosenNumbers };
+  $('#relay-description').textContent = `新 Seed 嘅第 ${format(relaySource.index)} 次：`;
+  $('#relay-seed').textContent = chosenSeed;
+  balls($('#relay-balls'), chosenNumbers);
+  $('#relay-preview').hidden = false;
+  $('#relay-generate-label').textContent = '再換個 Seed 睇新號碼';
+});
+
+$('#relay-use').addEventListener('click', () => {
+  if (!relayPick) return;
+  const chosenNumbers = relayPick.numbers;
+  $('#numbers').value = chosenNumbers.join(', ');
+  $('#numbers').dispatchEvent(new Event('input', { bubbles: true }));
+  $('#number-pick-status').textContent = `已套用 ${chosenNumbers.join('、')} 做新目標；原本 Seed 保留。`;
+  $('#search').focus();
 });
 
 $('#share-toggle').addEventListener('click', () => {
@@ -316,6 +368,7 @@ $('#search').addEventListener('click', () => {
     if (!target) throw new Error('請輸入 6 個 1–49 之間、唔重複嘅號碼。');
     const chosenSeed = seed();
     error();
+    clearRelay();
     $('#empty-result').hidden = true;
     $('#live-result').hidden = false;
     $('#live-result').dataset.state = 'searching';

@@ -109,3 +109,30 @@ body:has(.welcome-dialog[open]){overflow:hidden}
 @media(max-width:900px){.compare-section{display:block}.compare-controls{margin-top:18px}}
 @media(max-width:760px){.jump-error{grid-column:1;margin:-12px 0 0!important}.compare-row{grid-template-columns:1fr 1fr}.compare-seed{grid-column:1/-1}.compare-state{justify-self:start}.compare-section{padding:22px}}
 @media(max-width:460px){.compare-section{padding:18px;box-shadow:5px 5px 0 var(--ink)}.compare-controls{align-items:stretch;flex-direction:column}.compare-picker,.compare-choice{width:100%}.compare-choice label{flex:1}.compare-choice label span{min-width:0}.compare-controls button{width:100%}.compare-row{gap:7px;padding:10px}.compare-count{font-size:16px}.compare-cost{font-size:14px}.qa-item summary{min-height:58px;font-size:17px}}
+
+/* One-tap target number picker */
+.number-entry{display:flex;align-items:stretch;gap:8px}
+.number-entry .number-input{flex:1;min-width:0}
+.random-numbers-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:55px;flex:none;padding:7px 13px;border:3px solid var(--ink);background:var(--gold);color:var(--ink);font-size:15px;font-weight:900;white-space:nowrap}
+.random-numbers-button:hover{background:var(--red)}
+.random-numbers-button svg{width:20px;height:20px;flex:none}
+@media(max-width:1100px){.number-entry{flex-direction:column}.random-numbers-button{width:100%}}
+
+/* Seed relay uses a finished hit as the coordinate for another seed. */
+.relay-wrap{margin-top:23px;padding:17px;border:3px solid var(--ink);background:var(--paper);color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.relay-heading>span{display:inline-block;padding:3px 7px;background:var(--blue);color:white;font-size:11px;font-weight:900;letter-spacing:.08em}
+.relay-heading h3{margin:10px 0 5px;font-size:23px;line-height:1.2;font-weight:900}
+.relay-heading p{margin:0 0 14px;font-size:13px;line-height:1.5;font-weight:700}
+.relay-generate,.relay-use{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:49px;padding:9px 12px;border:3px solid var(--ink);color:var(--ink);text-align:left;font-size:15px;font-weight:900}
+.relay-generate{background:var(--red)}
+.relay-use{margin-top:14px;background:var(--gold)}
+.relay-generate:hover,.relay-use:hover{background:white}
+.relay-generate span:last-child,.relay-use span:last-child{font-size:23px;line-height:1}
+.relay-preview{margin-top:13px;padding:12px;border:2px solid var(--ink);background:white}
+.relay-preview p{margin:0 0 5px;font-size:13px;font-weight:800}
+.relay-preview code{display:block;max-width:100%;margin-bottom:13px;overflow-wrap:anywhere;font:700 17px/1.3 'Barlow Condensed',sans-serif}
+.relay-preview .ball{background:var(--red)}
+.relay-preview .ball:nth-child(3n + 2){background:var(--gold)}
+.relay-preview .ball:nth-child(3n + 3){background:var(--paper)}
+.relay-note{margin:13px 0 0;font-size:11px;line-height:1.5;font-weight:700}
+@media(max-width:460px){.relay-wrap{padding:13px}.relay-heading h3{font-size:21px}}

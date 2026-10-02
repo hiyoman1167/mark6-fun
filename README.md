@@ -29,7 +29,9 @@
 
 | | Explore |
 |---|---|
+| 🎲 **Quick pick** | Generate six distinct numbers in one tap, or tap again for another set. Your seed stays the same. |
 | 🎯 **First encounter** | Search until your exact six-number combination first appears. The app checks earlier chunks before declaring a winner. |
+| 🔀 **Seed relay** | Reuse a first-hit draw count as the position in a fresh seed, then turn that seed's six numbers into a new target. |
 | ⚡ **Four workers** | Split the search across up to four browser Web Workers, keeping the page responsive. |
 | ⏭️ **Jump to draw N** | Enter a draw number and calculate that draw directly from the same seed. |
 | 💸 **What would it cost?** | See a hypothetical spend at HK$10 per draw, alongside elapsed simulation time. |
@@ -61,7 +63,7 @@ Open **http://localhost:4173/**. There are no packages to install and no backend
 npm test
 ```
 
-The tests cover number validation, reversible combination ranking, deterministic draw lookup, parallel first-hit ordering, and the theoretical single-draw chance.
+The tests cover number validation, quick-pick range handling, reversible combination ranking, deterministic draw lookup, parallel first-hit ordering, and the theoretical single-draw chance.
 
 ## How it works
 

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   chanceWithin, COMBINATIONS, combinationRank, drawAt, firstMatchInRange, MAX_UNIQUE_DRAWS,
-  numbersAtRank, parseNumbers, rankAt, seedWords,
+  numbersAtRank, parseNumbers, randomCombination, rankAt, seedWords,
 } from './simulation.js';
 
 test('accepts exactly six unique Mark Six numbers', () => {
@@ -18,6 +18,15 @@ test('every combination has a reversible rank', () => {
   for (let rank = 0; rank < COMBINATIONS; rank += 997) {
     assert.equal(combinationRank(numbersAtRank(rank)), rank);
   }
+});
+
+test('random picker returns six unique numbers and retries out-of-range values', () => {
+  assert.deepEqual(randomCombination(() => 0), [1, 2, 3, 4, 5, 6]);
+  assert.deepEqual(randomCombination(() => COMBINATIONS - 1), [44, 45, 46, 47, 48, 49]);
+  const rejected = Math.floor(0x1_0000_0000 / COMBINATIONS) * COMBINATIONS;
+  let calls = 0;
+  assert.deepEqual(randomCombination(() => (++calls === 1 ? rejected : 1)), numbersAtRank(1));
+  assert.equal(calls, 2);
 });
 
 test('a seed and draw index reproduce the same six numbers directly', () => {
